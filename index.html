@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>GitHub Profile Finder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="GitHub Profile Finder using JavaScript and GitHub API with neon cyber UI.">
+    <meta name="author" content="Raghav Arora">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(circle at top, #00ffff33, transparent 40%),
+                linear-gradient(135deg, #05050a, #0a0f1f);
+            color: #fff;
+        }
+
+        .container {
+            width: 380px;
+            padding: 25px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(0, 255, 255, 0.25);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .search {
+            display: flex;
+            margin-bottom: 15px;
+        }
+
+        .search input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            outline: none;
+            background: #020617;
+            color: #00ffff;
+            border-radius: 8px 0 0 8px;
+        }
+
+        .search button {
+            padding: 10px 14px;
+            border: none;
+            cursor: pointer;
+            background: #00ffff;
+            color: #000;
+            font-weight: bold;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 0 12px #00ffff;
+        }
+
+        .profile {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .profile img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 15px #00ffff;
+        }
+
+        .profile h3 {
+            margin-top: 10px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .stats div {
+            flex: 1;
+        }
+
+        a {
+            display: block;
+            margin-top: 10px;
+            color: #00ffff;
+            text-decoration: none;
+        }
+
+        .error {
+            color: #ff4d4d;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        .footer {
+            margin-top: 12px;
+            font-size: 10px;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>GitHub Finder</h2>
+
+        <div class="search">
+            <input type="text" id="username" placeholder="Enter GitHub username">
+            <button onclick="findUser()">Search</button>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="profile" id="profile">
+            <img id="avatar">
+            <h3 id="name"></h3>
+            <p id="bio"></p>
+
+            <div class="stats">
+                <div>Repos<br><span id="repos"></span></div>
+                <div>Followers<br><span id="followers"></span></div>
+                <div>Following<br><span id="following"></span></div>
+            </div>
+
+            <a id="link" target="_blank">View Profile</a>
+        </div>
+
+        <div class="footer">Made By Raghav Arora</div>
+    </div>
+
+    <script>
+        async function findUser() {
+            const username = document.getElementById("username").value.trim();
+            const profile = document.getElementById("profile");
+            const error = document.getElementById("error");
+
+            if (!username) {
+                error.textContent = "Please enter a username";
+                return;
+            }
+
+            error.textContent = "";
+            profile.style.display = "none";
+
+            try {
+                const res = await fetch(`https://api.github.com/users/${username}`);
+
+                if (!res.ok) {
+                    error.textContent = "User not found";
+                    return;
+                }
+
+                const data = await res.json();
+
+                document.getElementById("avatar").src = data.avatar_url;
+                document.getElementById("name").textContent = data.name || data.login;
+                document.getElementById("bio").textContent = data.bio || "No bio available";
+                document.getElementById("repos").textContent = data.public_repos;
+                document.getElementById("followers").textContent = data.followers;
+                document.getElementById("following").textContent = data.following;
+                document.getElementById("link").href = data.html_url;
+
+                profile.style.display = "block";
+            }
+            catch (err) {
+                error.textContent = "Something went wrong!";
+            }
+        }
+    </script>
+
+</body>
+
+</html>
